@@ -75,8 +75,8 @@ public class MainActivity extends AppCompatActivity implements ChatMessageListen
 //            configBuilder.setUsernameAndPassword("admin", "davinchy");
             configBuilder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
             configBuilder.setResource("Android");
-            configBuilder.setServiceName("david-a665");
-            configBuilder.setHost("192.168.0.15");
+            configBuilder.setServiceName("MYXMPP");
+            configBuilder.setHost("");
             configBuilder.setPort(5222);
             configBuilder.setConnectTimeout(30000);
 
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements ChatMessageListen
             HashMap<String, String> properties = new HashMap<>();
             properties.put("email", "result@mail.com");
             properties.put("name", "tadaaa");
-            accountManager.sensitiveOperationOverInsecureConnection(true);
+            //accountManager.sensitiveOperationOverInsecureConnection(true);
             accountManager.createAccount(tvUser.getText().toString(), PASSWORD, properties);
             connection.login(tvUser.getText().toString(), PASSWORD);
             Presence p = new Presence(Presence.Type.available, "I am busy", 42, Presence.Mode.dnd);
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements ChatMessageListen
             prepareForChat();
 
             UserSearchManager usm = new UserSearchManager(connection);
-            Form searchForm = usm.getSearchForm("search.david-a665");
+            Form searchForm = usm.getSearchForm("search." + connection.getServiceName());
             Form answerForm = searchForm.createAnswerForm();
 
             UserSearch userSearch = new UserSearch();
@@ -171,6 +171,4 @@ public class MainActivity extends AppCompatActivity implements ChatMessageListen
             e.printStackTrace();
         }
     }
-
-
 }
