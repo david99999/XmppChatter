@@ -12,6 +12,7 @@ public class XmppApp extends SugarApp {
     @Override
     public void onCreate() {
         super.onCreate();
+        BusHelper.getInstance();
         Intent intent = new Intent(this, ConnectXmpp.class);
         if(startService(intent) != null) {
             Toast.makeText(getBaseContext(), "Service is already running", Toast.LENGTH_SHORT).show();

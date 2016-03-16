@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">XMPPPrueba</string>
+    <string name="title_activity_chats">ChatsActivity</string>
+    <string name="title_activity_contacts">ContactsActivity</string>
 </resources>

@@ -31,4 +31,9 @@ public class DBUtils {
         user.username = username;
         user.save();
     }
+
+    public static ThreadChat getChatWhitKey(String threadID) {
+        List<ThreadChat> chat = ThreadChat.find(ThreadChat.class, "key = ?", threadID);
+        return (chat != null && chat.size() > 0) ? chat.get(0) : null;
+    }
 }
