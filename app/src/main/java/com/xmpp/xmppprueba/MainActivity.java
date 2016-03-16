@@ -16,6 +16,7 @@ import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -30,6 +31,7 @@ import org.jivesoftware.smackx.search.UserSearchManager;
 import org.jivesoftware.smackx.xdata.Form;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ChatMessageListener, ChatManagerListener {
@@ -109,8 +111,14 @@ public class MainActivity extends AppCompatActivity implements ChatMessageListen
     public void login(View view) throws IOException, SmackException {
         AccountManager accountManager = AccountManager.getInstance(connection);
         try {
-            accountManager.createAccount(tvUser.getText().toString(), PASSWORD);
+            HashMap<String, String> properties = new HashMap<>();
+            properties.put("email", "result@mail.com");
+            properties.put("name", "tadaaa");
+            accountManager.sensitiveOperationOverInsecureConnection(true);
+            accountManager.createAccount(tvUser.getText().toString(), PASSWORD, properties);
             connection.login(tvUser.getText().toString(), PASSWORD);
+            Presence p = new Presence(Presence.Type.available, "I am busy", 42, Presence.Mode.dnd);
+            connection.sendStanza(p);
             ChatManager.getInstanceFor(connection).addChatListener(this);
             Toast.makeText(MainActivity.this, "Logueado", Toast.LENGTH_SHORT).show();
             prepareForChat();
@@ -157,13 +165,12 @@ public class MainActivity extends AppCompatActivity implements ChatMessageListen
 
                 }
             });
-       DeliveryReceiptRequest.from(m);
+            DeliveryReceiptRequest.from(m);
             connection.sendStanza(m);
         } catch (SmackException.NotConnectedException e) {
             e.printStackTrace();
         }
     }
-
 
 
 }
