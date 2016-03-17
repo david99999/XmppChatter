@@ -19,6 +19,7 @@ import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.search.ReportedData;
 import org.jivesoftware.smackx.search.UserSearch;
@@ -27,8 +28,10 @@ import org.jivesoftware.smackx.xdata.Form;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by Ankit on 10/3/2015.
@@ -92,7 +95,17 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
                     newChat = chatmanager.createChat(targetUserId);
                     DBUtils.storeNewChat(newChat);
                 }
+                Message message = new Message();
+                message.setType(Message.Type.chat);
+                message.setFrom(connection.getUser());
+                message.setTo(targetUserId);
+                message.setBody(content);
+                message.setThread(newChat.getThreadID());
+
+                DelayInformation inf = new DelayInformation(new Date());
+                message.addExtension(inf);
                 newChat.sendMessage(content);
+                DBUtils.storeNewMessage(message);
             } catch (SmackException.NotConnectedException e) {
                 Log.e(LOCAL_TAG, e.getMessage());
             }
@@ -147,10 +160,6 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
     public void login(String userName, String passWord) {
         try {
             connection.login(userName, passWord);
-            User user = new User();
-            user.name = userName;
-            user.password = passWord;
-            user.save();
         } catch (XMPPException | SmackException | IOException e) {
             Log.e(LOCAL_TAG, e.getMessage());
         }
@@ -162,11 +171,21 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
         if (previousChat == null) {
             DBUtils.storeNewChat(chat);
         }
+        chat.addMessageListener(this);
     }
 
     @Override
     public void processMessage(Chat chat, Message message) {
+        DBUtils.storeNewMessage(message);
         BusHelper.getInstance().post(message);
+        try {
+            DelayInformation inf = message.getExtension("delay", "urn:xmpp:delay");
+            Date date = inf.getStamp();
+            date = new Date(date.getTime() + TimeZone.getDefault().getOffset(date.getTime()));
+        } catch (Exception e) {
+            Log.e(LOCAL_TAG, e.getMessage());
+        }
+
     }
 
 
@@ -182,7 +201,7 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
 
             if (User.count(User.class) > 0) {
                 User user = User.listAll(User.class).get(0);
-                login(user.name, user.password);
+                login(user.username, user.password);
             }
             BusHelper.getInstance().post(XmppHelper.this.connection);
         }

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.xmpp.xmppprueba">
+    package="com.xmpp.xmppprueba"
+    android:versionCode="14"
+    android:versionName="14">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -31,7 +33,7 @@
         <activity
             android:name=".ContactsActivity"
             android:label="@string/title_activity_contacts"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
             android:name="DATABASE"
@@ -44,7 +46,7 @@
             android:value="true" />
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
-            android:value="com.xmpp.xmppprueba" />
+            android:value="com.xmpp.xmppprueba.models" />
     </application>
 
 </manifest>

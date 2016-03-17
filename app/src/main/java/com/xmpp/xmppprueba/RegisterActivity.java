@@ -56,6 +56,12 @@ public class RegisterActivity extends BaseActivity {
                 tvPass.getText().toString(),
                 etUserName.getText().toString()
         );
+        DBUtils.storeUser(
+                tvName.getText().toString(),
+                etEmail.getText().toString(),
+                tvLoginPass.getText().toString(),
+                tvLoginName.getText().toString()
+        );
         login(null);
     }
 
@@ -64,6 +70,9 @@ public class RegisterActivity extends BaseActivity {
                 tvLoginName.getText().toString(),
                 tvLoginPass.getText().toString()
         );
+        if (view != null) {
+            DBUtils.storeUser("", "", tvLoginPass.getText().toString(), tvLoginName.getText().toString());
+        }
         goToChatsScreen();
     }
 

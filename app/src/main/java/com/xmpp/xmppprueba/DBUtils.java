@@ -4,6 +4,7 @@ import com.xmpp.xmppprueba.models.ThreadChat;
 import com.xmpp.xmppprueba.models.User;
 
 import org.jivesoftware.smack.chat.Chat;
+import org.jivesoftware.smack.packet.Message;
 
 import java.util.List;
 
@@ -35,5 +36,14 @@ public class DBUtils {
     public static ThreadChat getChatWhitKey(String threadID) {
         List<ThreadChat> chat = ThreadChat.find(ThreadChat.class, "key = ?", threadID);
         return (chat != null && chat.size() > 0) ? chat.get(0) : null;
+    }
+
+    public static void storeNewMessage(Message message) {
+        com.xmpp.xmppprueba.models.Message newMessage = new com.xmpp.xmppprueba.models.Message();
+        newMessage.body = message.getBody();
+        newMessage.targetUser = message.getTo();
+        newMessage.user = message.getFrom();
+        newMessage.threadId = message.getThread();
+        newMessage.save();
     }
 }
