@@ -45,6 +45,9 @@ public class MessagingActivity extends BaseActivity implements TextWatcher {
         etMessage.addTextChangedListener(this);
         listener = this;
         setTitle("Chat con " + user.username);
+        for (Message mess : messages) {
+            addMessageToList(mess.body, mess.targetUser != user.username);
+        }
     }
 
     @Override

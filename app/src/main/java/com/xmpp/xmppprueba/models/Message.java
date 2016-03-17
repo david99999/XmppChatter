@@ -12,6 +12,7 @@ public class Message extends SugarRecord implements Serializable{
     public String targetUser;
     public String user;
     public String threadId;
+    public Long timestamp;
 
     public Message() {
     }

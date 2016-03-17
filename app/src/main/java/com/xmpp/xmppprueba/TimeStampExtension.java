@@ -5,7 +5,6 @@ import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smack.util.XmlStringBuilder;
 import org.xmlpull.v1.XmlPullParser;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TimeStampExtension implements ExtensionElement {
@@ -13,7 +12,7 @@ public class TimeStampExtension implements ExtensionElement {
     public static final String ELEMENT = "david";
     public static final String NAMESPACE = "http://jabber.org/protocol/timestamps";
 
-    public Long TIME = null;
+    private Long TIME = null;
 
 
     public TimeStampExtension() {
@@ -25,8 +24,8 @@ public class TimeStampExtension implements ExtensionElement {
         this.TIME = new Date().getTime();
     }
 
-    public String getTime() {
-        return new SimpleDateFormat("HH:mm:ss").format(new Date(TIME));
+    public Long getTime() {
+        return TIME;
     }
 
     public void setTime(Date date) {

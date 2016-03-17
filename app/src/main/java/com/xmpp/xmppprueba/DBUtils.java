@@ -49,13 +49,20 @@ public class DBUtils {
         newMessage.targetUser = message.getTo();
         newMessage.user = message.getFrom();
         newMessage.threadId = message.getThread();
+        newMessage.timestamp = Utils.getCreateTimeStampFromMessage(message);
         newMessage.save();
     }
 
     public static ArrayList<com.xmpp.xmppprueba.models.Message> getMessagesWithUser(User user) {
         try {
-            return (ArrayList<com.xmpp.xmppprueba.models.Message>) com.xmpp.xmppprueba.models.Message.find(com.xmpp.xmppprueba.models.Message.class,
-                    "thread_id = ?", getChatWhitUser(user.username).key);
+            User me = User.first(User.class);
+            return (ArrayList<com.xmpp.xmppprueba.models.Message>) com.xmpp.xmppprueba.models.Message.
+                    find(com.xmpp.xmppprueba.models.Message.class,
+                    "user like '%?%'  or target_user like '%?%'  or user like '%?%'  or target_user like '%?%",
+                    Utils.generateFullUserName(user.username),
+                    Utils.generateFullUserName(me.username),
+                    Utils.generateFullUserName(user.username),
+                    Utils.generateFullUserName(me.username));
         } catch (Exception e) {
             Log.e(LOCAL_TAG, e.getMessage());
             return new ArrayList<>();

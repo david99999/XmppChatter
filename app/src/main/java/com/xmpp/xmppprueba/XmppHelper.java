@@ -90,7 +90,7 @@ public class XmppHelper implements ChatManagerListener, ChatStateListener {
         if (previousChat != null && recoveredChat != null) {
             chatCreated(recoveredChat, true);
         } else {
-            chatmanager.createChat(userTarget + "@" + DOMAIN + "/" + RESOURCE, this);
+            chatmanager.createChat(Utils.generateFullUserName(userTarget), this);
         }
     }
 
@@ -186,12 +186,6 @@ public class XmppHelper implements ChatManagerListener, ChatStateListener {
         if (message.getBody() == null) return;
         DBUtils.storeNewMessage(message);
         BusHelper.getInstance().post(new ChatAndMessageWrapper(chat, message));
-        try {
-            TimeStampExtension inf = (TimeStampExtension) message.getExtension(TimeStampExtension.NAMESPACE);
-            Log.i(LOCAL_TAG, inf.getTime());
-        } catch (Exception e) {
-            Log.e(LOCAL_TAG, e.getMessage());
-        }
     }
 
     @Override
