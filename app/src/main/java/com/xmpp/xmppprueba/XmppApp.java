@@ -1,7 +1,6 @@
 package com.xmpp.xmppprueba;
 
 import android.content.Intent;
-import android.widget.Toast;
 
 import com.orm.SugarApp;
 import com.orm.SugarContext;
@@ -14,18 +13,12 @@ public class XmppApp extends SugarApp {
     public void onCreate() {
         super.onCreate();
         SugarContext.init(this);
-        BusHelper.getInstance();
-        Intent intent = new Intent(this, ConnectXmpp.class);
-        if(startService(intent) != null) {
-            Toast.makeText(getBaseContext(), "Service is already running", Toast.LENGTH_SHORT).show();
-        }
-        else {
-            Toast.makeText(getBaseContext(), "There is no service running, starting service..", Toast.LENGTH_SHORT).show();
-        }
+        startService(new Intent(this, ConnectXmpp.class));
     }
 
     @Override
     public void onTerminate() {
+        SugarContext.terminate();
         super.onTerminate();
     }
 }

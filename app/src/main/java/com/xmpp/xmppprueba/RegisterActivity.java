@@ -82,4 +82,9 @@ public class RegisterActivity extends BaseActivity {
         startActivity(new Intent(this, ChatsActivity.class));
         finish();
     }
+
+    @Override
+    public void OnServiceConnected() {
+
+    }
 }

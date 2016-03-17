@@ -20,6 +20,7 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.chatstates.ChatState;
 import org.jivesoftware.smackx.chatstates.ChatStateListener;
+import org.jivesoftware.smackx.chatstates.packet.ChatStateExtension;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.search.ReportedData;
@@ -40,9 +41,9 @@ import java.util.TimeZone;
 public class XmppHelper implements ChatManagerListener, ChatStateListener {
     private static final String LOCAL_TAG = XmppHelper.class.getSimpleName();
 
-    private static final String DOMAIN = "MYXMPP";
-    private static final String HOST = "192.81.217.199";
-    private static final String RESOURCE = "Android";
+    public static final String DOMAIN = "MYXMPP";
+    public static final String HOST = "192.81.217.199";
+    public static final String RESOURCE = "Android";
     XMPPTCPConnection connection;
     ChatManager chatmanager;
     XMPPConnectionListener connectionListener = new XMPPConnectionListener();
@@ -85,32 +86,26 @@ public class XmppHelper implements ChatManagerListener, ChatStateListener {
     }
 
     public void createChatWitUser(String userTarget) {
-        ThreadChat chat = DBUtils.getChatWhitUser(userTarget);
-        if (chat == null) {
+        ThreadChat previousChat = DBUtils.getChatWhitUser(userTarget);
+        Chat recoveredChat = previousChat != null ? chatmanager.getThreadChat(previousChat.key) : null;
+        if (previousChat != null && recoveredChat != null) {
+            chatCreated(recoveredChat, true);
+        } else {
             chatmanager.createChat(userTarget + "@" + DOMAIN + "/" + RESOURCE, this);
         }
     }
 
 
-    public void sendMsg(String targetUserId, String content) {
+    public void sendMsg(Chat chat, String content) {
         if (connection.isConnected() && connection.isAuthenticated()) {
             try {
-                ThreadChat chat = DBUtils.getChatWhitUser(targetUserId);
-                Chat newChat = chat != null ? chatmanager.getThreadChat(chat.key) : null;
-                if (newChat == null) {
-                    newChat = chatmanager.createChat(targetUserId + "@" + DOMAIN + "/" + RESOURCE, this);
-                    if (newChat == null) {
-                        Log.e(LOCAL_TAG, "no se encontró chat");
-                        return;
-                    }
-                }
                 Message message = new Message();
                 message.setType(Message.Type.chat);
                 message.setFrom(connection.getUser());
-                message.setTo(targetUserId);
+                message.setTo(chat.getParticipant());
                 message.setBody(content);
-                message.setThread(newChat.getThreadID());
-                newChat.sendMessage(content);
+                message.setThread(chat.getThreadID());
+                chat.sendMessage(content);
                 DBUtils.storeNewMessage(message);
             } catch (SmackException.NotConnectedException e) {
                 Log.e(LOCAL_TAG, e.getMessage());
@@ -183,8 +178,13 @@ public class XmppHelper implements ChatManagerListener, ChatStateListener {
 
     @Override
     public void processMessage(Chat chat, Message message) {
+        ChatStateExtension extension = (ChatStateExtension) message.getExtension(ChatStateExtension.NAMESPACE);
+        if (extension != null) {
+            stateChanged(chat, extension.getChatState());
+        }
+        if (message.getBody() == null) return;
         DBUtils.storeNewMessage(message);
-        BusHelper.getInstance().post(message);
+        BusHelper.getInstance().post(new ChatAndMessageWrapper(chat, message));
         try {
             DelayInformation inf = message.getExtension("delay", "urn:xmpp:delay");
             Date date = inf.getStamp();

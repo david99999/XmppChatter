@@ -21,7 +21,7 @@ public class ChatsActivity extends BaseActivity {
         setContentView(R.layout.activity_chats);
         toolbar = (Toolbar) findViewById(R.id.tbChats);
         setSupportActionBar(toolbar);
-        setTitle("Chats de " +User.findAll(User.class).next().username );
+        setTitle("Chats de " + User.findAll(User.class).next().username);
         fab = (FloatingActionButton) findViewById(R.id.fbChats);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -29,16 +29,28 @@ public class ChatsActivity extends BaseActivity {
                 startActivity(new Intent(ChatsActivity.this, ContactsActivity.class));
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         BusHelper.getInstance().register(this);
     }
 
     @Subscribe
-    public void OnMessageReceived(org.jivesoftware.smack.packet.Message message) {
-        Toast.makeText(this, message.getBody(), Toast.LENGTH_SHORT).show();
+    public void OnMessageReceived(ChatAndMessageWrapper wrapper) {
+        if (!wrapper.consumed)
+            Toast.makeText(this, wrapper.message.getBody(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void OnServiceConnected() {
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BusHelper.getInstance().unregister(this);
     }
 }
