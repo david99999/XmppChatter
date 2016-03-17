@@ -83,17 +83,25 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
         connectionThread.execute();
     }
 
+    public void createChatWitUser(String userTarget) {
+        ThreadChat chat = DBUtils.getChatWhitUser(userTarget);
+        if (chat == null) {
+            chatmanager.createChat(userTarget + "@" + DOMAIN + "/" + RESOURCE);
+        }
+    }
+
 
     public void sendMsg(String targetUserId, String content) {
         if (connection.isConnected() && connection.isAuthenticated()) {
             try {
                 ThreadChat chat = DBUtils.getChatWhitUser(targetUserId);
-                Chat newChat;
-                if (chat != null) {
-                    newChat = chatmanager.getThreadChat(chat.key);
-                } else {
+                Chat newChat = chat != null ? chatmanager.getThreadChat(chat.key) : null;
+                if (newChat == null) {
                     newChat = chatmanager.createChat(targetUserId + "@" + DOMAIN + "/" + RESOURCE);
-                    DBUtils.storeNewChat(newChat);
+                    if (newChat == null) {
+                        Log.e(LOCAL_TAG, "no se encontró chat");
+                        return;
+                    }
                 }
                 Message message = new Message();
                 message.setType(Message.Type.chat);
@@ -237,7 +245,7 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
             }
             if (User.count(User.class) > 0) {
                 User user = User.listAll(User.class).get(0);
-                login(user.name, user.password);
+                login(user.username, user.password);
             }
         }
 

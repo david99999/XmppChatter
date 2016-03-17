@@ -75,7 +75,6 @@ public class RegisterActivity extends BaseActivity {
                 tvLoginPass.getText().toString()
         );
         DBUtils.storeUser("", "", tvLoginPass.getText().toString(), tvLoginName.getText().toString());
-
         goToChatsScreen();
     }
 

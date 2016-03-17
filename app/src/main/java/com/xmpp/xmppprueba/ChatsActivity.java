@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Toast;
 
+import com.squareup.otto.Subscribe;
 import com.xmpp.xmppprueba.models.User;
 
 public class ChatsActivity extends BaseActivity {
@@ -27,6 +29,12 @@ public class ChatsActivity extends BaseActivity {
                 startActivity(new Intent(ChatsActivity.this, ContactsActivity.class));
             }
         });
+        BusHelper.getInstance().register(this);
+    }
+
+    @Subscribe
+    public void OnMessageReceived(org.jivesoftware.smack.packet.Message message) {
+        Toast.makeText(this, message.getBody(), Toast.LENGTH_SHORT).show();
     }
 
 }

@@ -26,7 +26,7 @@ public class DBUtils {
 
     public static ThreadChat getChatWhitUser(String targetUserId) {
         List<ThreadChat> chat = ThreadChat.find(ThreadChat.class, "target_user_id = ?", targetUserId);
-        return (chat != null && chat.size() > 0) ? chat.get(0) : null;
+        return (chat != null && chat.size() > 0) ? chat.get(chat.size() - 1) : null;
     }
 
     public static void storeUser(String name, String email, String password, String username) {
@@ -40,7 +40,7 @@ public class DBUtils {
 
     public static ThreadChat getChatWhitKey(String threadID) {
         List<ThreadChat> chat = ThreadChat.find(ThreadChat.class, "key = ?", threadID);
-        return (chat != null && chat.size() > 0) ? chat.get(0) : null;
+        return (chat != null && chat.size() > 0) ? chat.get(chat.size() - 1) : null;
     }
 
     public static void storeNewMessage(Message message) {
