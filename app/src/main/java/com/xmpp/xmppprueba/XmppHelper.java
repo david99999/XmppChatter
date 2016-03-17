@@ -188,7 +188,7 @@ public class XmppHelper implements ChatManagerListener, ChatStateListener {
         BusHelper.getInstance().post(new ChatAndMessageWrapper(chat, message));
         try {
             TimeStampExtension inf = (TimeStampExtension) message.getExtension(TimeStampExtension.NAMESPACE);
-            Log.i(LOCAL_TAG, String.valueOf(inf.getTime()));
+            Log.i(LOCAL_TAG, inf.getTime());
         } catch (Exception e) {
             Log.e(LOCAL_TAG, e.getMessage());
         }

@@ -5,6 +5,7 @@ import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smack.util.XmlStringBuilder;
 import org.xmlpull.v1.XmlPullParser;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TimeStampExtension implements ExtensionElement {
@@ -24,8 +25,8 @@ public class TimeStampExtension implements ExtensionElement {
         this.TIME = new Date().getTime();
     }
 
-    public Long getTime() {
-        return TIME;
+    public String getTime() {
+        return new SimpleDateFormat("HH:mm:ss").format(new Date(TIME));
     }
 
     public void setTime(Date date) {
@@ -57,7 +58,9 @@ public class TimeStampExtension implements ExtensionElement {
         public TimeStampExtension parse(XmlPullParser parser, int initialDepth) {
             Date date;
             try {
-                date = new Date(parser.getAttributeValue(0));
+                parser.next();
+                parser.next();
+                date = new Date(Long.parseLong(parser.getText()));
             } catch (Exception ex) {
                 date = new Date();
             }
