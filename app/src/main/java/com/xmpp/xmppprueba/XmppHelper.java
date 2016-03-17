@@ -92,7 +92,7 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
                 if (chat != null) {
                     newChat = chatmanager.getThreadChat(chat.key);
                 } else {
-                    newChat = chatmanager.createChat(targetUserId);
+                    newChat = chatmanager.createChat(targetUserId + "@" + DOMAIN + "/" + RESOURCE);
                     DBUtils.storeNewChat(newChat);
                 }
                 Message message = new Message();

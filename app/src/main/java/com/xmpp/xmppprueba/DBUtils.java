@@ -1,17 +1,22 @@
 package com.xmpp.xmppprueba;
 
+import android.util.Log;
+
 import com.xmpp.xmppprueba.models.ThreadChat;
 import com.xmpp.xmppprueba.models.User;
 
 import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.packet.Message;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by david on 16/03/16.
  */
 public class DBUtils {
+    private static final String LOCAL_TAG = DBUtils.class.getSimpleName();
+
     public static void storeNewChat(Chat newChat) {
         ThreadChat chatForStore = new ThreadChat();
         chatForStore.key = newChat.getThreadID();
@@ -45,5 +50,15 @@ public class DBUtils {
         newMessage.user = message.getFrom();
         newMessage.threadId = message.getThread();
         newMessage.save();
+    }
+
+    public static ArrayList<com.xmpp.xmppprueba.models.Message> getMessagesWithUser(User user) {
+        try {
+            return (ArrayList<com.xmpp.xmppprueba.models.Message>) com.xmpp.xmppprueba.models.Message.find(com.xmpp.xmppprueba.models.Message.class,
+                    "thread_id = ?", getChatWhitUser(user.username).key);
+        } catch (Exception e) {
+            Log.e(LOCAL_TAG, e.getMessage());
+            return new ArrayList<>();
+        }
     }
 }

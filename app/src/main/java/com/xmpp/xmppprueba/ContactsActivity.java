@@ -1,5 +1,6 @@
 package com.xmpp.xmppprueba;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
@@ -10,7 +11,7 @@ import com.xmpp.xmppprueba.models.User;
 
 import java.util.ArrayList;
 
-public class ContactsActivity extends BaseActivity implements BaseActivity.BoundServiceListener{
+public class ContactsActivity extends BaseActivity implements BaseActivity.BoundServiceListener {
 
     private FloatingActionButton fab;
     private Toolbar toolbar;
@@ -31,13 +32,24 @@ public class ContactsActivity extends BaseActivity implements BaseActivity.Bound
                 loadContacts();
             }
         });
-        listener = this;
     }
 
     private void loadContacts() {
         users = mService.getHelper().getUsers();
-        rvContacts.setAdapter(new ContactsAdapter(users));
+        rvContacts.setAdapter(new ContactsAdapter(users, listener));
     }
+
+    RecyclerViewLItemClickistener listener = new RecyclerViewLItemClickistener() {
+        @Override
+        public void OnItemClicked(int position) {
+            Intent intent = new Intent(ContactsActivity.this, MessagingActivity.class);
+            Bundle data = new Bundle();
+            data.putSerializable("User", users.get(position));
+            intent.putExtras(data);
+            startActivity(intent);
+            finish();
+        }
+    };
 
     @Override
     public void OnServiceConnected() {

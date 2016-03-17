@@ -15,24 +15,28 @@ import java.util.ArrayList;
 public class ContactsAdapter extends RecyclerView.Adapter<GenericHolder> {
 
     private final ArrayList<User> items;
+    private RecyclerViewLItemClickistener listener;
 
-    public ContactsAdapter(ArrayList<User> items){
+    public ContactsAdapter(ArrayList<User> items, RecyclerViewLItemClickistener listener) {
         this.items = items;
+        this.listener = listener;
     }
+
     @Override
     public GenericHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ContactItemView holder = (ContactItemView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.contact_item, parent, false);
-        return new GenericHolder(holder);
+        return new GenericHolder(holder, listener);
     }
 
     @Override
     public void onBindViewHolder(GenericHolder holder, int position) {
-        ((ContactItemView)holder.itemView).setUser(items.get(position));
+        ((ContactItemView) holder.itemView).setUser(items.get(position));
     }
 
     @Override
     public int getItemCount() {
         return items.size();
     }
+
 }
