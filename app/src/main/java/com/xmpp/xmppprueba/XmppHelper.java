@@ -15,10 +15,11 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.chat.ChatManagerListener;
-import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.chatstates.ChatState;
+import org.jivesoftware.smackx.chatstates.ChatStateListener;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.search.ReportedData;
@@ -36,7 +37,7 @@ import java.util.TimeZone;
 /**
  * Created by Ankit on 10/3/2015.
  */
-public class XmppHelper implements ChatMessageListener, ChatManagerListener {
+public class XmppHelper implements ChatManagerListener, ChatStateListener {
     private static final String LOCAL_TAG = XmppHelper.class.getSimpleName();
 
     private static final String DOMAIN = "MYXMPP";
@@ -86,7 +87,7 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
     public void createChatWitUser(String userTarget) {
         ThreadChat chat = DBUtils.getChatWhitUser(userTarget);
         if (chat == null) {
-            chatmanager.createChat(userTarget + "@" + DOMAIN + "/" + RESOURCE);
+            chatmanager.createChat(userTarget + "@" + DOMAIN + "/" + RESOURCE, this);
         }
     }
 
@@ -97,7 +98,7 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
                 ThreadChat chat = DBUtils.getChatWhitUser(targetUserId);
                 Chat newChat = chat != null ? chatmanager.getThreadChat(chat.key) : null;
                 if (newChat == null) {
-                    newChat = chatmanager.createChat(targetUserId + "@" + DOMAIN + "/" + RESOURCE);
+                    newChat = chatmanager.createChat(targetUserId + "@" + DOMAIN + "/" + RESOURCE, this);
                     if (newChat == null) {
                         Log.e(LOCAL_TAG, "no se encontró chat");
                         return;
@@ -109,9 +110,6 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
                 message.setTo(targetUserId);
                 message.setBody(content);
                 message.setThread(newChat.getThreadID());
-
-                DelayInformation inf = new DelayInformation(new Date());
-                message.addExtension(inf);
                 newChat.sendMessage(content);
                 DBUtils.storeNewMessage(message);
             } catch (SmackException.NotConnectedException e) {
@@ -180,6 +178,7 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
             DBUtils.storeNewChat(chat);
         }
         chat.addMessageListener(this);
+        BusHelper.getInstance().post(chat);
     }
 
     @Override
@@ -193,7 +192,11 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
         } catch (Exception e) {
             Log.e(LOCAL_TAG, e.getMessage());
         }
+    }
 
+    @Override
+    public void stateChanged(Chat chat, ChatState state) {
+        BusHelper.getInstance().post(new ChatAndStateWrapper(chat, state));
     }
 
 
