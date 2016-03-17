@@ -16,12 +16,12 @@ import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.chatstates.ChatState;
 import org.jivesoftware.smackx.chatstates.ChatStateListener;
 import org.jivesoftware.smackx.chatstates.packet.ChatStateExtension;
-import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.search.ReportedData;
 import org.jivesoftware.smackx.search.UserSearch;
@@ -30,10 +30,8 @@ import org.jivesoftware.smackx.xdata.Form;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Created by Ankit on 10/3/2015.
@@ -57,6 +55,7 @@ public class XmppHelper implements ChatManagerListener, ChatStateListener {
         configBuilder.setHost(HOST);
         connection = new XMPPTCPConnection(configBuilder.build());
         connection.addConnectionListener(connectionListener);
+        ProviderManager.addExtensionProvider(TimeStampExtension.ELEMENT, TimeStampExtension.NAMESPACE, new TimeStampExtension.Provider());
     }
 
     public void disconnectConnection() {
@@ -105,7 +104,9 @@ public class XmppHelper implements ChatManagerListener, ChatStateListener {
                 message.setTo(chat.getParticipant());
                 message.setBody(content);
                 message.setThread(chat.getThreadID());
-                chat.sendMessage(content);
+                TimeStampExtension extension = new TimeStampExtension();
+                message.addExtension(extension);
+                chat.sendMessage(message);
                 DBUtils.storeNewMessage(message);
             } catch (SmackException.NotConnectedException e) {
                 Log.e(LOCAL_TAG, e.getMessage());
@@ -186,9 +187,8 @@ public class XmppHelper implements ChatManagerListener, ChatStateListener {
         DBUtils.storeNewMessage(message);
         BusHelper.getInstance().post(new ChatAndMessageWrapper(chat, message));
         try {
-            DelayInformation inf = message.getExtension("delay", "urn:xmpp:delay");
-            Date date = inf.getStamp();
-            date = new Date(date.getTime() + TimeZone.getDefault().getOffset(date.getTime()));
+            TimeStampExtension inf = (TimeStampExtension) message.getExtension(TimeStampExtension.NAMESPACE);
+            Log.i(LOCAL_TAG, String.valueOf(inf.getTime()));
         } catch (Exception e) {
             Log.e(LOCAL_TAG, e.getMessage());
         }
