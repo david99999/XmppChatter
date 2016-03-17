@@ -179,6 +179,11 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
                 chatmanager = ChatManager.getInstanceFor(connection);
                 chatmanager.addChatListener(XmppHelper.this);
             }
+
+            if (User.count(User.class) > 0) {
+                User user = User.listAll(User.class).get(0);
+                login(user.name, user.password);
+            }
             BusHelper.getInstance().post(XmppHelper.this.connection);
         }
 
@@ -190,6 +195,7 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
         @Override
         public void connectionClosedOnError(Exception arg0) {
             Log.d(LOCAL_TAG, "ConnectionClosedOn Error!");
+            connectConnection();
         }
 
         @Override
@@ -209,6 +215,10 @@ public class XmppHelper implements ChatMessageListener, ChatManagerListener {
             if (chatmanager == null) {
                 chatmanager = ChatManager.getInstanceFor(connection);
                 chatmanager.addChatListener(XmppHelper.this);
+            }
+            if (User.count(User.class) > 0) {
+                User user = User.listAll(User.class).get(0);
+                login(user.name, user.password);
             }
         }
 

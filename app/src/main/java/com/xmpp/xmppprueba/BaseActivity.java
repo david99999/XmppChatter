@@ -12,18 +12,19 @@ public class BaseActivity extends AppCompatActivity {
     ConnectXmpp mService;
     boolean mBound = false;
 
+    public interface BoundServiceListener {
+        void OnServiceConnected();
+    }
+
+    BoundServiceListener listener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Bind to LocalService
         Intent intent = new Intent(this, ConnectXmpp.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
+
 
     @Override
     protected void onStop() {
@@ -42,12 +43,17 @@ public class BaseActivity extends AppCompatActivity {
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            ConnectXmpp.LocalBinder binder = (ConnectXmpp.LocalBinder) service;
-            mService = binder.getService();
-            mBound = true;
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            if (!isFinishing()) {
+                ConnectXmpp.LocalBinder binder = (ConnectXmpp.LocalBinder) service;
+                mService = binder.getService();
+                mBound = true;
+                if (listener != null) {
+                    listener.OnServiceConnected();
+                }
+            } else {
+                unbindService(mConnection);
+            }
         }
 
         @Override

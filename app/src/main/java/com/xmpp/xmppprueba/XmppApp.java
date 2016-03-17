@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.widget.Toast;
 
 import com.orm.SugarApp;
+import com.orm.SugarContext;
 
 /**
  * Created by david on 16/03/16.
@@ -12,6 +13,7 @@ public class XmppApp extends SugarApp {
     @Override
     public void onCreate() {
         super.onCreate();
+        SugarContext.init(this);
         BusHelper.getInstance();
         Intent intent = new Intent(this, ConnectXmpp.class);
         if(startService(intent) != null) {

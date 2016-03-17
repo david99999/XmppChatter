@@ -22,7 +22,6 @@ public class RegisterActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         if (User.findAll(User.class).hasNext()) {
             goToChatsScreen();
-            finish();
         }
         setContentView(R.layout.activity_register);
         initViews();
@@ -70,5 +69,6 @@ public class RegisterActivity extends BaseActivity {
 
     void goToChatsScreen() {
         startActivity(new Intent(this, ChatsActivity.class));
+        finish();
     }
 }
