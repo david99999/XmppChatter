@@ -18,7 +18,7 @@ import org.jivesoftware.smackx.chatstates.ChatStateManager;
 
 import java.util.ArrayList;
 
-public class MessagingActivity extends BaseActivity implements BaseActivity.BoundServiceListener, View.OnKeyListener {
+public class MessagingActivity extends BaseActivity implements View.OnKeyListener {
 
     LinearLayout messagesContainer;
     EditText etMessage;

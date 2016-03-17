@@ -34,7 +34,7 @@ public class ContactItemView extends CardView {
     }
 
     public void setUser(User user) {
-        tvName.setText(user.name);
+        tvName.setText(user.username);
     }
 
 }

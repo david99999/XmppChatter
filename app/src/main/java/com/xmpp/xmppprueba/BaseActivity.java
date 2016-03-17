@@ -8,13 +8,9 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements BoundServiceListener {
     ConnectXmpp mService;
     boolean mBound = false;
-
-    public interface BoundServiceListener {
-        void OnServiceConnected();
-    }
 
     BoundServiceListener listener;
 
@@ -48,9 +44,7 @@ public class BaseActivity extends AppCompatActivity {
                 ConnectXmpp.LocalBinder binder = (ConnectXmpp.LocalBinder) service;
                 mService = binder.getService();
                 mBound = true;
-                if (listener != null) {
-                    listener.OnServiceConnected();
-                }
+                OnServiceConnected();
             } else {
                 unbindService(mConnection);
             }

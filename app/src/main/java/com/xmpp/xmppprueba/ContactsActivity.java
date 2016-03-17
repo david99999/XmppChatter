@@ -11,7 +11,7 @@ import com.xmpp.xmppprueba.models.User;
 
 import java.util.ArrayList;
 
-public class ContactsActivity extends BaseActivity implements BaseActivity.BoundServiceListener {
+public class ContactsActivity extends BaseActivity{
 
     private FloatingActionButton fab;
     private Toolbar toolbar;
@@ -36,10 +36,10 @@ public class ContactsActivity extends BaseActivity implements BaseActivity.Bound
 
     private void loadContacts() {
         users = mService.getHelper().getUsers();
-        rvContacts.setAdapter(new ContactsAdapter(users, listener));
+        rvContacts.setAdapter(new ContactsAdapter(users, RecyclerViewItemClicklistener));
     }
 
-    RecyclerViewLItemClickistener listener = new RecyclerViewLItemClickistener() {
+    RecyclerViewLItemClickistener RecyclerViewItemClicklistener = new RecyclerViewLItemClickistener() {
         @Override
         public void OnItemClicked(int position) {
             Intent intent = new Intent(ContactsActivity.this, MessagingActivity.class);

@@ -21,7 +21,7 @@ public class ChatsActivity extends BaseActivity {
         setContentView(R.layout.activity_chats);
         toolbar = (Toolbar) findViewById(R.id.tbChats);
         setSupportActionBar(toolbar);
-        setTitle("Chats de " + User.findAll(User.class).next().name);
+        setTitle("Chats de " +User.findAll(User.class).next().username );
         fab = (FloatingActionButton) findViewById(R.id.fbChats);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,4 +37,8 @@ public class ChatsActivity extends BaseActivity {
         Toast.makeText(this, message.getBody(), Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void OnServiceConnected() {
+
+    }
 }
