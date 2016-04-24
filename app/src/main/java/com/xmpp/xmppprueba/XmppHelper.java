@@ -39,9 +39,9 @@ import java.util.List;
 public class XmppHelper implements ChatManagerListener, ChatStateListener {
     private static final String LOCAL_TAG = XmppHelper.class.getSimpleName();
 
-    public static final String DOMAIN = "MYXMPP";
-    public static final String HOST = "192.81.217.199";
-    public static final String RESOURCE = "Android";
+    public static final String DOMAIN = "myxmpp";
+    public static final String HOST = "abyandroid.com";
+    public static final String RESOURCE = "android";
     XMPPTCPConnection connection;
     ChatManager chatmanager;
     XMPPConnectionListener connectionListener = new XMPPConnectionListener();

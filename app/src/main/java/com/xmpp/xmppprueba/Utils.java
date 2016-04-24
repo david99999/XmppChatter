@@ -11,10 +11,18 @@ import java.util.Date;
 public class Utils {
 
     public static Long getCreateTimeStampFromMessage(Message message) {
-        return ((TimeStampExtension) message.getExtension(TimeStampExtension.NAMESPACE)).getTime();
+        try {
+            return ((TimeStampExtension) message.getExtension(TimeStampExtension.NAMESPACE)).getTime();
+        }catch (Exception e){
+            return new Date().getTime();
+        }
     }
     public static String getFormatedTimestamp(Long timestamp){
-        return new SimpleDateFormat("HH:mm:ss").format(new Date(timestamp));
+        try {
+            return new SimpleDateFormat("HH:mm:ss").format(new Date(timestamp));
+        }catch (Exception e){
+            return "";
+        }
     }
     public static String generateFullUserName(String user){
         return (user +  "@" + XmppHelper.DOMAIN + "/" + XmppHelper.RESOURCE).toLowerCase();

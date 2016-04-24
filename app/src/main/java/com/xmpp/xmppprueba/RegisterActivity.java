@@ -52,13 +52,13 @@ public class RegisterActivity extends BaseActivity {
     public void register(View view) {
         mService.getHelper().createAccount(
                 tvName.getText().toString(),
-                etEmail.getText().toString(),
+                etEmail.getText().toString().toLowerCase(),
                 tvPass.getText().toString(),
                 etUserName.getText().toString()
         );
         DBUtils.storeUser(
                 tvName.getText().toString(),
-                etEmail.getText().toString(),
+                etEmail.getText().toString().toLowerCase(),
                 tvPass.getText().toString(),
                 etUserName.getText().toString()
         );
